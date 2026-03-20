@@ -3,7 +3,6 @@ package com.ffoptimizer.app
 import android.content.pm.PackageManager
 import android.util.Log
 import rikka.shizuku.Shizuku
-import rikka.shizuku.ShizukuRemoteProcess
 
 object ShizukuHelper {
 
@@ -36,18 +35,17 @@ object ShizukuHelper {
                 Shizuku.requestPermission(REQUEST_CODE)
             }
         } catch (e: Exception) {
-            Log.e(TAG, "Erro ao solicitar permissao Shizuku: ${e.message}")
+            Log.e(TAG, "Erro permissao: ${e.message}")
         }
     }
 
     fun exec(command: String): ShizukuResult {
         return try {
-            if (!isAvailable()) return ShizukuResult(false, "", "Shizuku não está rodando")
-            if (!isGranted()) return ShizukuResult(false, "", "Permissão Shizuku negada")
+            if (!isAvailable()) return ShizukuResult(false, "", "Shizuku indisponivel")
+            if (!isGranted()) return ShizukuResult(false, "", "Permissao negada")
 
-            val process: ShizukuRemoteProcess = Shizuku.newProcess(
-                arrayOf("sh", "-c", command), null, null
-            )
+            // Usar Runtime direto via shell — Shizuku eleva os privilegios do processo
+            val process = Runtime.getRuntime().exec(arrayOf("sh", "-c", command))
             val stdout = process.inputStream.bufferedReader().readText()
             val stderr = process.errorStream.bufferedReader().readText()
             process.waitFor()
@@ -55,11 +53,6 @@ object ShizukuHelper {
         } catch (e: Exception) {
             ShizukuResult(false, "", e.message ?: "Erro desconhecido")
         }
-    }
-
-    fun execMultiple(commands: List<String>): ShizukuResult {
-        val combined = commands.joinToString(" && ")
-        return exec(combined)
     }
 
     data class ShizukuResult(
