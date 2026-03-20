@@ -1,32 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <style name="Theme.FFOptimizer" parent="Theme.MaterialComponents.DayNight.NoActionBar">
-        <item name="colorPrimary">@color/orange_ff</item>
-        <item name="colorPrimaryVariant">@color/btn_red</item>
-        <item name="colorOnPrimary">@color/white</item>
-        <item name="colorSecondary">@color/green_neon</item>
-        <item name="colorOnSecondary">@color/black</item>
-        <item name="android:statusBarColor">@color/bg_dark</item>
-        <item name="android:navigationBarColor">@color/bg_dark</item>
-        <item name="android:windowBackground">@color/bg_dark</item>
+        <item name="colorPrimary">#1AFF1A</item>
+        <item name="colorPrimaryVariant">#00CC00</item>
+        <item name="colorOnPrimary">#000000</item>
+        <item name="colorSecondary">#1AFF1A</item>
+        <item name="colorOnSecondary">#000000</item>
+        <item name="android:statusBarColor">#000000</item>
+        <item name="android:navigationBarColor">#000000</item>
+        <item name="android:windowBackground">#000000</item>
+        <item name="switchStyle">@style/MatrixSwitch</item>
+    </style>
+
+    <style name="MatrixSwitch" parent="Widget.MaterialComponents.CompoundButton.Switch">
+        <item name="thumbTint">@color/matrix_green</item>
+        <item name="trackTint">@color/matrix_track</item>
     </style>
 
     <style name="FpsDialogTheme" parent="Theme.MaterialComponents.Dialog.Alert">
-        <item name="colorPrimary">@color/orange_ff</item>
-        <item name="colorAccent">@color/orange_ff</item>
-        <item name="android:background">@color/card_dark</item>
-        <item name="android:textColor">@color/text_primary</item>
-        <item name="android:textColorPrimary">@color/text_primary</item>
+        <item name="colorPrimary">#1AFF1A</item>
+        <item name="colorAccent">#1AFF1A</item>
+        <item name="android:background">#0A0A0A</item>
+        <item name="android:textColor">#1AFF1A</item>
+        <item name="android:textColorPrimary">#1AFF1A</item>
         <item name="buttonBarPositiveButtonStyle">@style/DialogPositiveButton</item>
         <item name="buttonBarNegativeButtonStyle">@style/DialogNegativeButton</item>
     </style>
 
     <style name="DialogPositiveButton" parent="Widget.MaterialComponents.Button">
-        <item name="android:textColor">@color/orange_ff</item>
+        <item name="android:textColor">#1AFF1A</item>
         <item name="android:textStyle">bold</item>
     </style>
 
     <style name="DialogNegativeButton" parent="Widget.MaterialComponents.Button.TextButton">
-        <item name="android:textColor">@color/text_secondary</item>
+        <item name="android:textColor">#888888</item>
     </style>
 </resources>
