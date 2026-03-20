@@ -25,6 +25,13 @@ jobs:
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
 
+      - name: Baixar gradle-wrapper.jar
+        run: |
+          mkdir -p gradle/wrapper
+          curl -fsSL "https://github.com/gradle/gradle/raw/v8.1.1/gradle/wrapper/gradle-wrapper.jar" \
+            -o gradle/wrapper/gradle-wrapper.jar
+          echo "Tamanho: $(ls -lh gradle/wrapper/gradle-wrapper.jar)"
+
       - name: Permissao gradlew
         run: chmod +x gradlew
 
@@ -39,10 +46,10 @@ jobs:
             ${{ runner.os }}-gradle-
 
       - name: Build Debug APK
-        run: ./gradlew assembleDebug --no-daemon
+        run: ./gradlew assembleDebug --no-daemon --stacktrace
 
       - name: Build Release APK
-        run: ./gradlew assembleRelease --no-daemon
+        run: ./gradlew assembleRelease --no-daemon --stacktrace
 
       - name: Upload APK Debug
         uses: actions/upload-artifact@v4
