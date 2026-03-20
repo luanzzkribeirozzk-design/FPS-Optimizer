@@ -55,11 +55,13 @@ class MainActivity : AppCompatActivity() {
             isRooted = isDeviceRooted()
             withContext(Dispatchers.Main) {
                 if (isRooted) {
-                    binding.tvRootStatus.text = "✅ ROOT DETECTADO"
-                    binding.tvRootStatus.setTextColor(getColor(R.color.green_neon))
+                    binding.tvRootStatus.text = "ROOT ATIVO"
+                    binding.tvRootStatus.setTextColor(android.graphics.Color.parseColor("#1AFF1A"))
+                    logTerminal("> Root detectado — modo completo ativado")
                 } else {
-                    binding.tvRootStatus.text = "⚠️ SEM ROOT — MODO LIMITADO"
-                    binding.tvRootStatus.setTextColor(getColor(R.color.yellow_warn))
+                    binding.tvRootStatus.text = "SEM ROOT"
+                    binding.tvRootStatus.setTextColor(android.graphics.Color.parseColor("#FFD600"))
+                    logTerminal("> Sem root — modo limitado")
                 }
             }
         }
@@ -99,21 +101,15 @@ class MainActivity : AppCompatActivity() {
         // Força 120FPS FFN
         binding.btnFps120FFN.setOnClickListener {
             animateButtonPress(it)
-            if (fps120FFNActive) {
-                disable120Fps(PKG_FFN, "FFN")
-            } else {
-                showFpsDialog(PKG_FFN, "FFN")
-            }
+            if (fps120FFNActive) disable120Fps(PKG_FFN, "FFN")
+            else showFpsDialog(PKG_FFN, "FFN")
         }
 
         // Força 120FPS FFM
         binding.btnFps120FFM.setOnClickListener {
             animateButtonPress(it)
-            if (fps120FFMActive) {
-                disable120Fps(PKG_FFM, "FFM")
-            } else {
-                showFpsDialog(PKG_FFM, "FFM")
-            }
+            if (fps120FFMActive) disable120Fps(PKG_FFM, "FFM")
+            else showFpsDialog(PKG_FFM, "FFM")
         }
 
         // Mostrar Taxa FPS
@@ -134,10 +130,25 @@ class MainActivity : AppCompatActivity() {
             openGame(PKG_FFM, "Free Fire MAX")
         }
 
-        // Hide Stream
-        binding.btnHideStream.setOnClickListener {
+        // Hide Stream via Switch
+        binding.switchHideStream.setOnCheckedChangeListener { _, isChecked ->
+            hideStreamActive = isChecked
+            if (isChecked) {
+                window.addFlags(WindowManager.LayoutParams.FLAG_SECURE)
+                binding.tvHideStreamStatus.text = "HIDE STREAM: ON"
+                logTerminal("> Hide Stream ATIVADO — tela oculta em streams")
+            } else {
+                window.clearFlags(WindowManager.LayoutParams.FLAG_SECURE)
+                binding.tvHideStreamStatus.text = "HIDE STREAM: OFF"
+                logTerminal("> Hide Stream DESATIVADO")
+            }
+        }
+
+        // Limpar Logs
+        binding.btnClearLogs.setOnClickListener {
             animateButtonPress(it)
-            toggleHideStream()
+            binding.tvStatus.text = ""
+            binding.tvStatus.visibility = android.view.View.GONE
         }
     }
 
@@ -518,21 +529,22 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun showSuccess(msg: String) {
-        binding.tvStatus.text = msg
-        binding.tvStatus.setTextColor(getColor(R.color.green_neon))
-        binding.tvStatus.visibility = View.VISIBLE
-        Handler(Looper.getMainLooper()).postDelayed({
-            binding.tvStatus.visibility = View.GONE
-        }, 3000)
+        logTerminal("> $msg")
     }
 
     private fun showError(msg: String) {
-        binding.tvStatus.text = msg
-        binding.tvStatus.setTextColor(getColor(R.color.red_error))
+        logTerminal("> ERRO: $msg")
+        binding.tvStatus.setTextColor(android.graphics.Color.parseColor("#FF4444"))
         binding.tvStatus.visibility = View.VISIBLE
-        Handler(Looper.getMainLooper()).postDelayed({
-            binding.tvStatus.visibility = View.GONE
-        }, 3000)
+    }
+
+    private fun logTerminal(msg: String) {
+        runOnUiThread {
+            val current = binding.tvStatus.text.toString()
+            val newText = if (current.isEmpty()) msg else "$current\n$msg"
+            binding.tvStatus.text = newText
+            binding.tvStatus.visibility = View.VISIBLE
+        }
     }
 
     private fun showToast(msg: String) {
