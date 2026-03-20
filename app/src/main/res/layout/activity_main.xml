@@ -3,8 +3,9 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/bg_deep">
+    android:background="#000000">
 
+    <!-- Partículas Matrix -->
     <com.ffoptimizer.app.ParticleView
         android:id="@+id/particleView"
         android:layout_width="match_parent"
@@ -20,428 +21,424 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:paddingStart="18dp"
-            android:paddingEnd="18dp"
-            android:paddingBottom="32dp">
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:paddingBottom="24dp">
 
+            <!-- ══ HEADER ESTILO MATRIX ══ -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:gravity="center"
-                android:paddingTop="24dp"
-                android:paddingBottom="16dp">
+                android:paddingTop="32dp"
+                android:paddingBottom="8dp">
 
-                <ImageView
-                    android:layout_width="280dp"
-                    android:layout_height="280dp"
-                    android:src="@drawable/banner"
-                    android:scaleType="fitCenter"
-                    android:layout_gravity="center" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="FPS OPTIMIZER -"
+                    android:textColor="#1AFF1A"
+                    android:textSize="13sp"
+                    android:letterSpacing="0.15"
+                    android:fontFamily="monospace" />
 
-                <View
-                    android:layout_width="200dp"
-                    android:layout_height="2dp"
-                    android:layout_marginTop="10dp"
-                    android:background="@drawable/divider_neon" />
-
-            </LinearLayout>
-
-            <!-- STATUS -->
-            <androidx.cardview.widget.CardView
-                android:id="@+id/cardStatus"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="14dp"
-                app:cardBackgroundColor="#0A1628"
-                app:cardCornerRadius="18dp"
-                app:cardElevation="0dp">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="FREE FIRE"
+                    android:textColor="#FF00FF"
+                    android:textSize="44sp"
+                    android:textStyle="bold"
+                    android:letterSpacing="0.05"
+                    android:fontFamily="monospace"
+                    android:lineSpacingMultiplier="0.9" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:padding="18dp"
-                    android:background="@drawable/card_border_cyan">
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:paddingTop="4dp">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="FREE FIRE · BOOST SYSTEM"
+                        android:textColor="#1AFF1A"
+                        android:textSize="11sp"
+                        android:letterSpacing="0.08"
+                        android:fontFamily="monospace" />
 
                     <LinearLayout
-                        android:layout_width="match_parent"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:orientation="horizontal"
                         android:gravity="center_vertical">
 
-                        <TextView
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:text="STATUS DO DISPOSITIVO"
-                            android:textColor="#00FFEA"
-                            android:textSize="10sp"
-                            android:letterSpacing="0.2"
-                            android:textStyle="bold" />
-
                         <View
                             android:id="@+id/statusDot"
-                            android:layout_width="8dp"
-                            android:layout_height="8dp"
-                            android:background="@drawable/dot_green" />
-
-                    </LinearLayout>
-
-                    <TextView
-                        android:id="@+id/tvRootStatus"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="🔍 Verificando root..."
-                        android:textColor="#E0E0FF"
-                        android:textSize="14sp"
-                        android:textStyle="bold"
-                        android:paddingTop="8dp" />
-
-                    <TextView
-                        android:id="@+id/tvStatus"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text=""
-                        android:textColor="#00FFEA"
-                        android:textSize="13sp"
-                        android:paddingTop="6dp"
-                        android:visibility="gone" />
-
-                    <ProgressBar
-                        android:id="@+id/progressBar"
-                        style="@style/Widget.AppCompat.ProgressBar.Horizontal"
-                        android:layout_width="match_parent"
-                        android:layout_height="4dp"
-                        android:layout_marginTop="10dp"
-                        android:indeterminate="true"
-                        android:indeterminateTint="#00FFEA"
-                        android:visibility="gone" />
-
-                </LinearLayout>
-            </androidx.cardview.widget.CardView>
-
-            <!-- LIMPEZA -->
-            <androidx.cardview.widget.CardView
-                android:id="@+id/cardCache"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="14dp"
-                app:cardBackgroundColor="#0A1628"
-                app:cardCornerRadius="18dp"
-                app:cardElevation="0dp">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:padding="18dp"
-                    android:background="@drawable/card_border_cyan">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="🧹  LIMPEZA"
-                        android:textColor="#00FFEA"
-                        android:textSize="10sp"
-                        android:letterSpacing="0.2"
-                        android:textStyle="bold"
-                        android:paddingBottom="12dp" />
-
-                    <Button
-                        android:id="@+id/btnClearCache"
-                        android:layout_width="match_parent"
-                        android:layout_height="54dp"
-                        android:text="🗑️   Limpar Cache"
-                        android:textColor="#FFFFFF"
-                        android:textSize="15sp"
-                        android:textStyle="bold"
-                        android:background="@drawable/btn_neon_cyan"
-                        android:stateListAnimator="@null" />
-
-                </LinearLayout>
-            </androidx.cardview.widget.CardView>
-
-            <!-- OTIMIZAR -->
-            <androidx.cardview.widget.CardView
-                android:id="@+id/cardOptimize"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="14dp"
-                app:cardBackgroundColor="#0A1628"
-                app:cardCornerRadius="18dp"
-                app:cardElevation="0dp">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:padding="18dp"
-                    android:background="@drawable/card_border_orange">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="⚡  OTIMIZAÇÃO  •  ~90% de melhora"
-                        android:textColor="#FF9D00"
-                        android:textSize="10sp"
-                        android:letterSpacing="0.2"
-                        android:textStyle="bold"
-                        android:paddingBottom="12dp" />
-
-                    <Button
-                        android:id="@+id/btnOptimizeFFN"
-                        android:layout_width="match_parent"
-                        android:layout_height="54dp"
-                        android:text="⚡   Otimizar FFN"
-                        android:textColor="#FFFFFF"
-                        android:textSize="15sp"
-                        android:textStyle="bold"
-                        android:background="@drawable/btn_neon_orange"
-                        android:stateListAnimator="@null"
-                        android:layout_marginBottom="10dp" />
-
-                    <Button
-                        android:id="@+id/btnOptimizeFFM"
-                        android:layout_width="match_parent"
-                        android:layout_height="54dp"
-                        android:text="⚡   Otimizar FFM"
-                        android:textColor="#FFFFFF"
-                        android:textSize="15sp"
-                        android:textStyle="bold"
-                        android:background="@drawable/btn_neon_orange"
-                        android:stateListAnimator="@null" />
-
-                </LinearLayout>
-            </androidx.cardview.widget.CardView>
-
-            <!-- 120 FPS -->
-            <androidx.cardview.widget.CardView
-                android:id="@+id/cardFps"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="14dp"
-                app:cardBackgroundColor="#0A1628"
-                app:cardCornerRadius="18dp"
-                app:cardElevation="0dp">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:padding="18dp"
-                    android:background="@drawable/card_border_pink">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="🔥  FORÇA 120 FPS  •  90~120fps travado"
-                        android:textColor="#FF6FFF"
-                        android:textSize="10sp"
-                        android:letterSpacing="0.2"
-                        android:textStyle="bold"
-                        android:paddingBottom="12dp" />
-
-                    <Button
-                        android:id="@+id/btnFps120FFN"
-                        android:layout_width="match_parent"
-                        android:layout_height="54dp"
-                        android:text="🔥   Força 120 FPS — FFN"
-                        android:textColor="#FFFFFF"
-                        android:textSize="15sp"
-                        android:textStyle="bold"
-                        android:background="@drawable/btn_neon_pink"
-                        android:stateListAnimator="@null"
-                        android:layout_marginBottom="10dp" />
-
-                    <Button
-                        android:id="@+id/btnFps120FFM"
-                        android:layout_width="match_parent"
-                        android:layout_height="54dp"
-                        android:text="🔥   Força 120 FPS — FFM"
-                        android:textColor="#FFFFFF"
-                        android:textSize="15sp"
-                        android:textStyle="bold"
-                        android:background="@drawable/btn_neon_pink"
-                        android:stateListAnimator="@null" />
-
-                </LinearLayout>
-            </androidx.cardview.widget.CardView>
-
-            <!-- MONITOR FPS -->
-            <androidx.cardview.widget.CardView
-                android:id="@+id/cardOverlay"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="14dp"
-                app:cardBackgroundColor="#0A1628"
-                app:cardCornerRadius="18dp"
-                app:cardElevation="0dp">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:padding="18dp"
-                    android:background="@drawable/card_border_green">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="📊  MONITOR EM TEMPO REAL"
-                        android:textColor="#00FF88"
-                        android:textSize="10sp"
-                        android:letterSpacing="0.2"
-                        android:textStyle="bold"
-                        android:paddingBottom="12dp" />
-
-                    <Button
-                        android:id="@+id/btnShowFps"
-                        android:layout_width="match_parent"
-                        android:layout_height="54dp"
-                        android:text="📊   Mostrar Taxa FPS"
-                        android:textColor="#FFFFFF"
-                        android:textSize="15sp"
-                        android:textStyle="bold"
-                        android:background="@drawable/btn_neon_green"
-                        android:stateListAnimator="@null" />
-
-                </LinearLayout>
-            </androidx.cardview.widget.CardView>
-
-            <!-- ABRIR JOGOS -->
-            <androidx.cardview.widget.CardView
-                android:id="@+id/cardOpen"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="20dp"
-                app:cardBackgroundColor="#0A1628"
-                app:cardCornerRadius="18dp"
-                app:cardElevation="0dp">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:padding="18dp"
-                    android:background="@drawable/card_border_cyan">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="🎮  ABRIR JOGO"
-                        android:textColor="#00FFEA"
-                        android:textSize="10sp"
-                        android:letterSpacing="0.2"
-                        android:textStyle="bold"
-                        android:paddingBottom="12dp" />
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal">
-
-                        <Button
-                            android:id="@+id/btnOpenFFN"
-                            android:layout_width="0dp"
-                            android:layout_height="54dp"
-                            android:layout_weight="1"
-                            android:text="▶  FFN"
-                            android:textColor="#FFFFFF"
-                            android:textSize="15sp"
-                            android:textStyle="bold"
-                            android:background="@drawable/btn_neon_cyan"
-                            android:stateListAnimator="@null"
-                            android:layout_marginEnd="8dp" />
-
-                        <Button
-                            android:id="@+id/btnOpenFFM"
-                            android:layout_width="0dp"
-                            android:layout_height="54dp"
-                            android:layout_weight="1"
-                            android:text="▶  FFM"
-                            android:textColor="#FFFFFF"
-                            android:textSize="15sp"
-                            android:textStyle="bold"
-                            android:background="@drawable/btn_neon_cyan"
-                            android:stateListAnimator="@null" />
-
-                    </LinearLayout>
-                </LinearLayout>
-            </androidx.cardview.widget.CardView>
-
-            <!-- HIDE STREAM -->
-            <androidx.cardview.widget.CardView
-                android:id="@+id/cardHideStream"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="14dp"
-                app:cardBackgroundColor="#0A1628"
-                app:cardCornerRadius="18dp"
-                app:cardElevation="0dp">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:padding="18dp"
-                    android:background="@drawable/card_border_pink">
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:gravity="center_vertical"
-                        android:paddingBottom="6dp">
+                            android:layout_width="7dp"
+                            android:layout_height="7dp"
+                            android:background="@drawable/dot_green"
+                            android:layout_marginEnd="4dp" />
 
                         <TextView
-                            android:layout_width="0dp"
+                            android:id="@+id/tvRootStatus"
+                            android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:text="🎥  PRIVACIDADE DE STREAM"
-                            android:textColor="#FF6FFF"
-                            android:textSize="10sp"
-                            android:letterSpacing="0.2"
-                            android:textStyle="bold" />
+                            android:text="VERIFICANDO"
+                            android:textColor="#1AFF1A"
+                            android:textSize="11sp"
+                            android:textStyle="bold"
+                            android:letterSpacing="0.08"
+                            android:fontFamily="monospace" />
+
+                    </LinearLayout>
+                </LinearLayout>
+
+                <!-- Linha divisória neon verde -->
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginTop="12dp"
+                    android:background="#1AFF1A"
+                    android:alpha="0.5" />
+
+            </LinearLayout>
+
+            <!-- ══ HIDE STREAM ══ -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingTop="16dp"
+                android:paddingBottom="16dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="HIDE STREAM"
+                            android:textColor="#1AFF1A"
+                            android:textSize="16sp"
+                            android:textStyle="bold"
+                            android:letterSpacing="0.12"
+                            android:fontFamily="monospace" />
 
                         <TextView
                             android:id="@+id/tvHideStreamStatus"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="● OFF"
-                            android:textColor="#FF4444"
+                            android:text="HIDE STREAM: OFF"
+                            android:textColor="#1AFF1A"
                             android:textSize="11sp"
-                            android:textStyle="bold" />
+                            android:alpha="0.6"
+                            android:fontFamily="monospace"
+                            android:paddingTop="2dp" />
 
                     </LinearLayout>
 
-                    <TextView
-                        android:layout_width="match_parent"
+                    <Switch
+                        android:id="@+id/switchHideStream"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Tela preta em transmissões, prints e gravações"
-                        android:textColor="#8899BB"
-                        android:textSize="12sp"
-                        android:paddingBottom="12dp" />
-
-                    <Button
-                        android:id="@+id/btnHideStream"
-                        android:layout_width="match_parent"
-                        android:layout_height="54dp"
-                        android:text="🎥   Hide Stream"
-                        android:textColor="#FFFFFF"
-                        android:textSize="15sp"
-                        android:textStyle="bold"
-                        android:background="@drawable/btn_neon_pink"
-                        android:stateListAnimator="@null" />
+                        android:thumbTint="#1AFF1A"
+                        android:trackTint="#0A3A0A" />
 
                 </LinearLayout>
-            </androidx.cardview.widget.CardView>
 
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginTop="14dp"
+                    android:background="#1AFF1A"
+                    android:alpha="0.2" />
 
-                android:textColor="#33FFFFFF"
+            </LinearLayout>
+
+            <!-- ══ BOTÕES PRINCIPAIS ══ -->
+
+            <!-- Limpar Cache -->
+            <Button
+                android:id="@+id/btnClearCache"
+                android:layout_width="match_parent"
+                android:layout_height="54dp"
+                android:layout_marginBottom="6dp"
+                android:text="LIMPAR CACHE"
+                android:textColor="#000000"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:letterSpacing="0.12"
+                android:fontFamily="monospace"
+                android:background="@drawable/btn_matrix_fill"
+                android:stateListAnimator="@null" />
+
+            <!-- Otimizar FFN -->
+            <Button
+                android:id="@+id/btnOptimizeFFN"
+                android:layout_width="match_parent"
+                android:layout_height="54dp"
+                android:layout_marginBottom="2dp"
+                android:text="OTIMIZAR FFN"
+                android:textColor="#000000"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:letterSpacing="0.12"
+                android:fontFamily="monospace"
+                android:background="@drawable/btn_matrix_fill"
+                android:stateListAnimator="@null" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Free Fire Normal"
+                android:textColor="#1AFF1A"
+                android:textSize="11sp"
+                android:gravity="center"
+                android:alpha="0.55"
+                android:fontFamily="monospace"
+                android:paddingBottom="8dp" />
+
+            <!-- Otimizar FFM -->
+            <Button
+                android:id="@+id/btnOptimizeFFM"
+                android:layout_width="match_parent"
+                android:layout_height="54dp"
+                android:layout_marginBottom="2dp"
+                android:text="OTIMIZAR FFM"
+                android:textColor="#000000"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:letterSpacing="0.12"
+                android:fontFamily="monospace"
+                android:background="@drawable/btn_matrix_fill"
+                android:stateListAnimator="@null" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Free Fire MAX"
+                android:textColor="#1AFF1A"
+                android:textSize="11sp"
+                android:gravity="center"
+                android:alpha="0.55"
+                android:fontFamily="monospace"
+                android:paddingBottom="8dp" />
+
+            <!-- Força 120 FPS FFN -->
+            <Button
+                android:id="@+id/btnFps120FFN"
+                android:layout_width="match_parent"
+                android:layout_height="54dp"
+                android:layout_marginBottom="2dp"
+                android:text="FORÇA 120 FPS — FFN"
+                android:textColor="#1AFF1A"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:letterSpacing="0.08"
+                android:fontFamily="monospace"
+                android:background="@drawable/btn_matrix_outline"
+                android:stateListAnimator="@null" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Free Fire Normal → 90~120fps"
+                android:textColor="#1AFF1A"
+                android:textSize="11sp"
+                android:gravity="center"
+                android:alpha="0.55"
+                android:fontFamily="monospace"
+                android:paddingBottom="8dp" />
+
+            <!-- Força 120 FPS FFM -->
+            <Button
+                android:id="@+id/btnFps120FFM"
+                android:layout_width="match_parent"
+                android:layout_height="54dp"
+                android:layout_marginBottom="2dp"
+                android:text="FORÇA 120 FPS — FFM"
+                android:textColor="#1AFF1A"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:letterSpacing="0.08"
+                android:fontFamily="monospace"
+                android:background="@drawable/btn_matrix_outline"
+                android:stateListAnimator="@null" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Free Fire MAX → 90~120fps"
+                android:textColor="#1AFF1A"
+                android:textSize="11sp"
+                android:gravity="center"
+                android:alpha="0.55"
+                android:fontFamily="monospace"
+                android:paddingBottom="8dp" />
+
+            <!-- Mostrar FPS -->
+            <Button
+                android:id="@+id/btnShowFps"
+                android:layout_width="match_parent"
+                android:layout_height="54dp"
+                android:layout_marginBottom="8dp"
+                android:text="MOSTRAR TAXA FPS"
+                android:textColor="#1AFF1A"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:letterSpacing="0.08"
+                android:fontFamily="monospace"
+                android:background="@drawable/btn_matrix_outline"
+                android:stateListAnimator="@null" />
+
+            <!-- Abrir Jogos lado a lado -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginBottom="16dp">
+
+                <Button
+                    android:id="@+id/btnOpenFFN"
+                    android:layout_width="0dp"
+                    android:layout_height="54dp"
+                    android:layout_weight="1"
+                    android:text="ABRIR FFN"
+                    android:textColor="#000000"
+                    android:textSize="13sp"
+                    android:textStyle="bold"
+                    android:letterSpacing="0.08"
+                    android:fontFamily="monospace"
+                    android:background="@drawable/btn_matrix_fill"
+                    android:stateListAnimator="@null"
+                    android:layout_marginEnd="6dp" />
+
+                <Button
+                    android:id="@+id/btnOpenFFM"
+                    android:layout_width="0dp"
+                    android:layout_height="54dp"
+                    android:layout_weight="1"
+                    android:text="ABRIR FFM"
+                    android:textColor="#000000"
+                    android:textSize="13sp"
+                    android:textStyle="bold"
+                    android:letterSpacing="0.08"
+                    android:fontFamily="monospace"
+                    android:background="@drawable/btn_matrix_fill"
+                    android:stateListAnimator="@null" />
+
+            </LinearLayout>
+
+            <!-- ══ TERMINAL LOG ══ -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:background="#050505"
+                android:padding="12dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:paddingBottom="8dp">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="root@fpsoptimizer:~$ boost_log"
+                        android:textColor="#1AFF1A"
+                        android:textSize="11sp"
+                        android:fontFamily="monospace" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="v1.0"
+                        android:textColor="#1AFF1A"
+                        android:textSize="10sp"
+                        android:alpha="0.5"
+                        android:fontFamily="monospace" />
+
+                </LinearLayout>
+
+                <!-- Barra de progresso -->
+                <ProgressBar
+                    android:id="@+id/progressBar"
+                    style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="3dp"
+                    android:indeterminate="true"
+                    android:indeterminateTint="#1AFF1A"
+                    android:visibility="gone"
+                    android:layout_marginBottom="6dp" />
+
+                <!-- Log de texto -->
+                <TextView
+                    android:id="@+id/tvStatus"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:minHeight="80dp"
+                    android:text=""
+                    android:textColor="#1AFF1A"
+                    android:textSize="12sp"
+                    android:fontFamily="monospace"
+                    android:gravity="top"
+                    android:visibility="gone" />
+
+                <!-- Cursor piscando -->
+                <TextView
+                    android:id="@+id/tvCursor"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="█"
+                    android:textColor="#1AFF1A"
+                    android:textSize="14sp"
+                    android:fontFamily="monospace" />
+
+            </LinearLayout>
+
+            <!-- Limpar logs -->
+            <Button
+                android:id="@+id/btnClearLogs"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:layout_marginTop="6dp"
+                android:text="LIMPAR LOGS"
+                android:textColor="#1AFF1A"
+                android:textSize="13sp"
+                android:textStyle="bold"
+                android:letterSpacing="0.1"
+                android:fontFamily="monospace"
+                android:background="@drawable/btn_matrix_outline_dim"
+                android:stateListAnimator="@null" />
+
+            <!-- Footer -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="by FPS OPTIMIZER"
+                android:textColor="#1AFF1A"
                 android:textSize="10sp"
                 android:gravity="center"
-                android:letterSpacing="0.15" />
+                android:alpha="0.3"
+                android:fontFamily="monospace"
+                android:paddingTop="12dp" />
 
         </LinearLayout>
     </ScrollView>
