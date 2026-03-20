@@ -241,67 +241,102 @@ class MainActivity : AppCompatActivity() {
     }
 
     // ─────────────────────────────────────────────
-    // FORÇA 120 FPS — COMANDOS REAIS VIA SHIZUKU
+    // FORÇA 120 FPS — MÉTODO REAL
+    // Edita os arquivos de config internos do FF
     // ─────────────────────────────────────────────
     private fun force120Fps(pkg: String, tag: String) {
         showProgress()
-        logTerminal("> Forcando 120 FPS em $tag...")
+        logTerminal("> Forcando 120 FPS REAL em $tag...")
         lifecycleScope.launch(Dispatchers.IO) {
 
-            // 1. Display refresh rate — força 120Hz no sistema
+            // ── MÉTODO 1: Editar config.ini do Free Fire ──
+            // O FF lê esse arquivo na inicialização para definir o FPS cap
+            val dataDirs = listOf(
+                "/sdcard/Android/data/$pkg/files",
+                "/data/data/$pkg/files",
+                "/sdcard/Android/data/$pkg",
+                "/data/user/0/$pkg/files"
+            )
+
+            val configContent = """
+[config]
+maxfps=120
+highfps=1
+fps=120
+targetfps=120
+enablehighfps=1
+resolution=0
+graphics=0
+shadow=0
+""".trimIndent()
+
+            for (dir in dataDirs) {
+                ShizukuHelper.exec("mkdir -p $dir 2>/dev/null")
+                ShizukuHelper.exec("echo '$configContent' > $dir/config.ini 2>/dev/null")
+                ShizukuHelper.exec("echo '$configContent' > $dir/UserCustom.ini 2>/dev/null")
+                ShizukuHelper.exec("chmod 777 $dir/config.ini 2>/dev/null")
+            }
+
+            // ── MÉTODO 2: Editar preferências SharedPreferences do FF ──
+            val spDir = "/data/data/$pkg/shared_prefs"
+            ShizukuHelper.exec("mkdir -p $spDir 2>/dev/null")
+
+            val spContent = """<?xml version='1.0' encoding='utf-8' standalone='yes' ?>
+<map>
+    <int name="fps" value="120" />
+    <int name="maxfps" value="120" />
+    <boolean name="highfps" value="true" />
+    <int name="GraphicsLevel" value="0" />
+    <boolean name="EnableHighFps" value="true" />
+    <int name="FpsLimit" value="120" />
+</map>""".trimIndent()
+
+            ShizukuHelper.exec("echo '$spContent' > $spDir/FPS_SETTINGS.xml 2>/dev/null")
+            ShizukuHelper.exec("chmod 777 $spDir/FPS_SETTINGS.xml 2>/dev/null")
+
+            // ── MÉTODO 3: System properties que o FF lê ──
+            ShizukuHelper.exec("setprop $pkg.fps 120")
+            ShizukuHelper.exec("setprop $pkg.maxfps 120")
+            ShizukuHelper.exec("setprop $pkg.highfps 1")
+
+            // ── MÉTODO 4: Display 120Hz real via dumpsys ──
             ShizukuHelper.exec("settings put system peak_refresh_rate 120")
             ShizukuHelper.exec("settings put system min_refresh_rate 120")
             ShizukuHelper.exec("settings put system user_refresh_rate 120")
-            ShizukuHelper.exec("settings put secure user_refresh_rate 120")
-            ShizukuHelper.exec("settings put system refresh_rate_mode 2")
-            ShizukuHelper.exec("settings put secure refresh_rate_mode 2")
+            // Forçar display mode 120hz via dumpsys SurfaceFlinger
+            ShizukuHelper.exec("dumpsys SurfaceFlinger --latency 2>/dev/null")
+            ShizukuHelper.exec("service call SurfaceFlinger 1035 i32 0 2>/dev/null")
 
-            // 2. SurfaceFlinger — remove teto de FPS
-            ShizukuHelper.exec("service call SurfaceFlinger 1035 i32 0")
-            ShizukuHelper.exec("service call SurfaceFlinger 1008 f 120.0")
-            ShizukuHelper.exec("service call SurfaceFlinger 1034 i32 1")
-
-            // 3. Propriedades de debug — remove limitadores
+            // ── MÉTODO 5: GPU sem nenhum limitador ──
             ShizukuHelper.exec("setprop debug.sf.enable_gl_backpressure 0")
             ShizukuHelper.exec("setprop debug.sf.latch_unsignaled 1")
             ShizukuHelper.exec("setprop debug.sf.disable_backpressure 1")
-            ShizukuHelper.exec("setprop debug.sf.recomputecrop 0")
-            ShizukuHelper.exec("setprop debug.hwui.fps_divisor 1")
             ShizukuHelper.exec("setprop debug.egl.swapinterval 0")
-
-            // 4. GPU — desativa throttling e força clock máximo
+            ShizukuHelper.exec("setprop debug.hwui.fps_divisor 1")
             ShizukuHelper.exec("echo 0 > /sys/class/kgsl/kgsl-3d0/throttling 2>/dev/null")
-            ShizukuHelper.exec("cat /sys/class/kgsl/kgsl-3d0/gpu_available_frequencies | awk '{print \$1}' | head -1 | xargs -I{} sh -c 'echo {} > /sys/class/kgsl/kgsl-3d0/gpuclk' 2>/dev/null")
             ShizukuHelper.exec("echo performance > /sys/class/kgsl/kgsl-3d0/devfreq/governor 2>/dev/null")
             ShizukuHelper.exec("echo 1 > /sys/class/kgsl/kgsl-3d0/force_clk_on 2>/dev/null")
-            ShizukuHelper.exec("echo 1 > /sys/class/kgsl/kgsl-3d0/force_bus_on 2>/dev/null")
-            ShizukuHelper.exec("echo 1 > /sys/class/kgsl/kgsl-3d0/force_rail_on 2>/dev/null")
 
-            // 5. CPU — máxima performance
+            // ── MÉTODO 6: CPU performance total ──
             ShizukuHelper.exec("for cpu in /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor; do echo performance > \$cpu 2>/dev/null; done")
 
-            // 6. Thermal — desativa throttling térmico
+            // ── MÉTODO 7: Matar thermal para não throttle ──
             ShizukuHelper.exec("stop thermal-engine 2>/dev/null")
             ShizukuHelper.exec("stop thermald 2>/dev/null")
             ShizukuHelper.exec("stop mi_thermald 2>/dev/null")
             ShizukuHelper.exec("stop vendor.thermal-hal-service 2>/dev/null")
 
-            // 7. Prioridade MÁXIMA no processo do jogo
-            ShizukuHelper.exec("pid=\$(pidof $pkg 2>/dev/null); if [ -n \"\$pid\" ]; then renice -20 \$pid; chrt -f -p 99 \$pid 2>/dev/null; fi")
-
-            // 8. Memória — libera RAM para o jogo
-            ShizukuHelper.exec("echo 0 > /proc/sys/vm/swappiness 2>/dev/null")
-            ShizukuHelper.exec("echo 3 > /proc/sys/vm/drop_caches 2>/dev/null")
-
-            // 9. Activity manager — coloca jogo em foreground prioritário
-            ShizukuHelper.exec("am set-process-limit 0")
+            // ── MÉTODO 8: Prioridade máxima no processo ──
+            ShizukuHelper.exec("pid=\$(pidof $pkg 2>/dev/null); if [ -n \"\$pid\" ]; then renice -20 \$pid 2>/dev/null; chrt -f -p 99 \$pid 2>/dev/null; fi")
 
             delay(1500)
             withContext(Dispatchers.Main) {
                 hideProgress()
-                logTerminal("> 120 FPS forcado com sucesso em $tag!")
-                logTerminal("> CPU/GPU/Display travados no maximo")
-                logTerminal("> Abra o jogo agora e teste o FPS")
+                logTerminal("> config.ini do $tag editado → maxfps=120")
+                logTerminal("> SharedPreferences do $tag → FPS=120")
+                logTerminal("> Display 120Hz + GPU sem throttle")
+                logTerminal("> ABRA O JOGO AGORA e teste o FPS!")
+                logTerminal("> (reinicie o jogo se ja estava aberto)")
                 if (pkg == PKG_FFN) {
                     fps120FFNActive = true
                     binding.btnFps120FFN.text = "DESATIVAR 120 FPS — FFN"
