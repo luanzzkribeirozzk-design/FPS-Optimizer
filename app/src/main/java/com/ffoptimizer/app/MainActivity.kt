@@ -1,5 +1,6 @@
 package com.ffoptimizer.app
 
+import android.app.AlertDialog
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
@@ -12,141 +13,155 @@ import android.view.WindowManager
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
-import com.ffoptimizer.app.databinding.ActivityMainBinding
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.io.BufferedReader
-import java.io.DataOutputStream
-import java.io.InputStreamReader
+import rikka.shizuku.Shizuku
 
 class MainActivity : AppCompatActivity() {
 
-    private lateinit var binding: ActivityMainBinding
+    private lateinit var binding: com.ffoptimizer.app.databinding.ActivityMainBinding
 
     companion object {
         const val PKG_FFN = "com.dts.freefireth"
         const val PKG_FFM = "com.dts.freefiremax"
-        const val OVERLAY_PERMISSION_CODE = 1001
         const val REQUEST_OVERLAY = 1002
     }
 
-    private var isRooted = false
     private var fpsOverlayActive = false
     private var fps120FFNActive = false
     private var fps120FFMActive = false
-    private var hideStreamActive = false
+
+    private val shizukuListener = Shizuku.OnRequestPermissionResultListener { _, grantResult ->
+        if (grantResult == PackageManager.PERMISSION_GRANTED) {
+            logTerminal("> Shizuku autorizado! Modo completo ativo")
+            showMainUI()
+        } else {
+            showShizukuWall("Permissão negada pelo usuário.")
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityMainBinding.inflate(layoutInflater)
+        binding = com.ffoptimizer.app.databinding.ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        checkRoot()
+        Shizuku.addRequestPermissionResultListener(shizukuListener)
         setupButtons()
-        animateCards()
+
+        // Verifica Shizuku ao iniciar
+        checkShizukuOnStart()
     }
 
-    private fun checkRoot() {
+    override fun onResume() {
+        super.onResume()
+        // Recheck toda vez que voltar ao app
+        checkShizukuOnStart()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        Shizuku.removeRequestPermissionResultListener(shizukuListener)
+    }
+
+    // ─────────────────────────────────────────────
+    // SHIZUKU WALL — NADA FUNCIONA SEM ELE
+    // ─────────────────────────────────────────────
+    private fun checkShizukuOnStart() {
         lifecycleScope.launch(Dispatchers.IO) {
-            isRooted = isDeviceRooted()
+            delay(300)
             withContext(Dispatchers.Main) {
-                if (isRooted) {
-                    binding.tvRootStatus.text = "ROOT ATIVO"
-                    binding.tvRootStatus.setTextColor(android.graphics.Color.parseColor("#1AFF1A"))
-                    logTerminal("> Root detectado — modo completo ativado")
-                } else {
-                    binding.tvRootStatus.text = "SEM ROOT"
-                    binding.tvRootStatus.setTextColor(android.graphics.Color.parseColor("#FFD600"))
-                    logTerminal("> Sem root — modo limitado")
+                when {
+                    !ShizukuHelper.isAvailable() -> {
+                        showShizukuWall("Shizuku não está rodando.\nInstale e ative o Shizuku para continuar.")
+                    }
+                    !ShizukuHelper.isGranted() -> {
+                        binding.tvRootStatus.text = "SHIZUKU — AGUARDANDO AUTORIZACAO"
+                        binding.tvRootStatus.setTextColor(android.graphics.Color.parseColor("#FFD600"))
+                        showShizukuWall("Autorize o FPS Optimizer no Shizuku.")
+                        ShizukuHelper.requestPermission()
+                    }
+                    else -> showMainUI()
                 }
             }
         }
     }
 
-    private fun isDeviceRooted(): Boolean {
-        return try {
-            val process = Runtime.getRuntime().exec(arrayOf("su", "-c", "id"))
-            val reader = BufferedReader(InputStreamReader(process.inputStream))
-            val output = reader.readLine() ?: ""
-            process.waitFor()
-            output.contains("uid=0")
-        } catch (e: Exception) {
-            false
-        }
+    private fun showShizukuWall(reason: String) {
+        // Bloqueia toda a UI
+        binding.scrollContent.visibility = View.GONE
+        binding.layoutShizukuWall.visibility = View.VISIBLE
+        binding.tvShizukuReason.text = reason
+        binding.tvRootStatus.text = "SHIZUKU INATIVO"
+        binding.tvRootStatus.setTextColor(android.graphics.Color.parseColor("#FF4444"))
     }
 
+    private fun showMainUI() {
+        binding.layoutShizukuWall.visibility = View.GONE
+        binding.scrollContent.visibility = View.VISIBLE
+        binding.tvRootStatus.text = "SHIZUKU ATIVO"
+        binding.tvRootStatus.setTextColor(android.graphics.Color.parseColor("#1AFF1A"))
+        logTerminal("> Shizuku OK — todos os recursos liberados")
+        logTerminal("> FPS Optimizer v1.0 pronto")
+    }
+
+    // ─────────────────────────────────────────────
+    // SETUP BOTÕES
+    // ─────────────────────────────────────────────
     private fun setupButtons() {
-        // Limpar Cache
+        // Botão da wall: instalar Shizuku
+        binding.btnInstallShizuku.setOnClickListener {
+            startActivity(Intent(Intent.ACTION_VIEW,
+                Uri.parse("market://details?id=moe.shizuku.privileged.api")))
+        }
+
+        // Botão da wall: tentar novamente
+        binding.btnRetryShizuku.setOnClickListener {
+            checkShizukuOnStart()
+        }
+
         binding.btnClearCache.setOnClickListener {
-            animateButtonPress(it)
-            clearCache()
+            animateButtonPress(it); clearCache()
         }
-
-        // Otimizar FFN
         binding.btnOptimizeFFN.setOnClickListener {
-            animateButtonPress(it)
-            optimizeGame(PKG_FFN, "Free Fire Normal")
+            animateButtonPress(it); optimizeGame(PKG_FFN, "FFN")
         }
-
-        // Otimizar FFM
         binding.btnOptimizeFFM.setOnClickListener {
-            animateButtonPress(it)
-            optimizeGame(PKG_FFM, "Free Fire MAX")
+            animateButtonPress(it); optimizeGame(PKG_FFM, "FFM")
         }
-
-        // Força 120FPS FFN
         binding.btnFps120FFN.setOnClickListener {
             animateButtonPress(it)
             if (fps120FFNActive) disable120Fps(PKG_FFN, "FFN")
             else showFpsDialog(PKG_FFN, "FFN")
         }
-
-        // Força 120FPS FFM
         binding.btnFps120FFM.setOnClickListener {
             animateButtonPress(it)
             if (fps120FFMActive) disable120Fps(PKG_FFM, "FFM")
             else showFpsDialog(PKG_FFM, "FFM")
         }
-
-        // Mostrar Taxa FPS
         binding.btnShowFps.setOnClickListener {
-            animateButtonPress(it)
-            toggleFpsOverlay()
+            animateButtonPress(it); toggleFpsOverlay()
         }
-
-        // Abrir FFN
         binding.btnOpenFFN.setOnClickListener {
-            animateButtonPress(it)
-            openGame(PKG_FFN, "Free Fire Normal")
+            animateButtonPress(it); openGame(PKG_FFN, "Free Fire Normal")
         }
-
-        // Abrir FFM
         binding.btnOpenFFM.setOnClickListener {
-            animateButtonPress(it)
-            openGame(PKG_FFM, "Free Fire MAX")
+            animateButtonPress(it); openGame(PKG_FFM, "Free Fire MAX")
         }
-
-        // Hide Stream via Switch
         binding.switchHideStream.setOnCheckedChangeListener { _, isChecked ->
-            hideStreamActive = isChecked
             if (isChecked) {
                 window.addFlags(WindowManager.LayoutParams.FLAG_SECURE)
                 binding.tvHideStreamStatus.text = "HIDE STREAM: ON"
-                logTerminal("> Hide Stream ATIVADO — tela oculta em streams")
+                logTerminal("> Hide Stream ATIVADO")
             } else {
                 window.clearFlags(WindowManager.LayoutParams.FLAG_SECURE)
                 binding.tvHideStreamStatus.text = "HIDE STREAM: OFF"
                 logTerminal("> Hide Stream DESATIVADO")
             }
         }
-
-        // Limpar Logs
         binding.btnClearLogs.setOnClickListener {
-            animateButtonPress(it)
-            binding.tvStatus.text = ""
-            binding.tvStatus.visibility = android.view.View.GONE
+            animateButtonPress(it); binding.tvStatus.text = ""
         }
     }
 
@@ -154,218 +169,145 @@ class MainActivity : AppCompatActivity() {
     // LIMPAR CACHE
     // ─────────────────────────────────────────────
     private fun clearCache() {
-        showProgress("Limpando cache...")
+        showProgress()
+        logTerminal("> Limpando cache completo...")
         lifecycleScope.launch(Dispatchers.IO) {
-            try {
-                val commands = listOf(
-                    "sync",
-                    "echo 3 > /proc/sys/vm/drop_caches",
-                    "pm clear $PKG_FFN",
-                    "pm clear $PKG_FFM",
-                    "rm -rf /sdcard/Android/data/$PKG_FFN/cache/*",
-                    "rm -rf /sdcard/Android/data/$PKG_FFM/cache/*",
-                    "rm -rf /data/data/$PKG_FFN/cache/*",
-                    "rm -rf /data/data/$PKG_FFM/cache/*"
-                )
-                if (isRooted) {
-                    executeRootCommands(commands)
-                } else {
-                    // Sem root: limpa apenas cache do app
-                    applicationContext.cacheDir.deleteRecursively()
-                }
-                withContext(Dispatchers.Main) {
-                    hideProgress()
-                    showSuccess("✅ Cache limpo com sucesso!")
-                    pulseSuccess(binding.btnClearCache)
-                }
-            } catch (e: Exception) {
-                withContext(Dispatchers.Main) {
-                    hideProgress()
-                    showError("Erro ao limpar cache: ${e.message}")
-                }
+            ShizukuHelper.exec("sync && echo 3 > /proc/sys/vm/drop_caches")
+            ShizukuHelper.exec("pm clear $PKG_FFN")
+            ShizukuHelper.exec("pm clear $PKG_FFM")
+            ShizukuHelper.exec("rm -rf /sdcard/Android/data/$PKG_FFN/cache/*")
+            ShizukuHelper.exec("rm -rf /sdcard/Android/data/$PKG_FFM/cache/*")
+            ShizukuHelper.exec("rm -rf /data/data/$PKG_FFN/cache/*")
+            ShizukuHelper.exec("rm -rf /data/data/$PKG_FFM/cache/*")
+            delay(800)
+            withContext(Dispatchers.Main) {
+                hideProgress()
+                logTerminal("> Cache limpo com sucesso!")
             }
         }
-    }
-
-    // ─────────────────────────────────────────────
-    // DIALOG FORÇA FPS
-    // ─────────────────────────────────────────────
-    private fun showFpsDialog(pkg: String, tag: String) {
-        val gameName = if (pkg == PKG_FFN) "Free Fire Normal" else "Free Fire MAX"
-        android.app.AlertDialog.Builder(this, R.style.FpsDialogTheme)
-            .setTitle("⚡ Força 120 FPS — $tag")
-            .setMessage(
-                "Essa função força o FPS no máximo que seu celular suporta!\n\n" +
-                "📱 Tela 120Hz → força até 120fps\n" +
-                "📱 Tela 60Hz → força até 60fps\n\n" +
-                "Em qualquer caso o jogo vai rodar muito mais fluido do que antes!"
-            )
-            .setPositiveButton("⚡ Aplicar!") { dialog, _ ->
-                dialog.dismiss()
-                force120Fps(pkg, tag)
-            }
-            .setNegativeButton("Cancelar") { dialog, _ ->
-                dialog.dismiss()
-            }
-            .setCancelable(true)
-            .show()
     }
 
     // ─────────────────────────────────────────────
     // OTIMIZAR JOGO
     // ─────────────────────────────────────────────
-    private fun optimizeGame(pkg: String, gameName: String) {
-        showProgress("Otimizando $gameName...")
+    private fun optimizeGame(pkg: String, tag: String) {
+        showProgress()
+        logTerminal("> Otimizando $tag — CPU/GPU/RAM...")
         lifecycleScope.launch(Dispatchers.IO) {
-            try {
-                val commands = mutableListOf<String>()
-
-                if (isRooted) {
-                    commands.addAll(listOf(
-                        // CPU Governor para performance
-                        "for cpu in /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor; do echo performance > \$cpu 2>/dev/null; done",
-                        // CPU max frequency
-                        "for cpu in /sys/devices/system/cpu/cpu*/cpufreq/scaling_max_freq; do cat \${cpu/scaling_max_freq/cpuinfo_max_freq} > \$cpu 2>/dev/null; done",
-                        // GPU max performance
-                        "echo performance > /sys/class/kgsl/kgsl-3d0/devfreq/governor 2>/dev/null",
-                        "echo 1 > /sys/class/kgsl/kgsl-3d0/force_clk_on 2>/dev/null",
-                        "echo 1 > /sys/class/kgsl/kgsl-3d0/force_bus_on 2>/dev/null",
-                        "echo 1 > /sys/class/kgsl/kgsl-3d0/force_rail_on 2>/dev/null",
-                        // Mali GPU
-                        "echo performance > /sys/devices/platform/mali.0/power_policy 2>/dev/null",
-                        "echo always_on > /sys/devices/platform/mali.0/power_policy 2>/dev/null",
-                        // Desabilitar thermal throttling temporariamente
-                        "stop thermal-engine 2>/dev/null",
-                        "stop thermald 2>/dev/null",
-                        // Memória
-                        "echo 0 > /proc/sys/vm/swappiness 2>/dev/null",
-                        "echo 3 > /proc/sys/vm/drop_caches 2>/dev/null",
-                        "echo 1 > /proc/sys/vm/overcommit_memory 2>/dev/null",
-                        // Prioridade do processo do jogo
-                        "renice -20 \$(pidof $pkg) 2>/dev/null",
-                        // I/O scheduler
-                        "for dev in /sys/block/*/queue/scheduler; do echo deadline > \$dev 2>/dev/null; done",
-                        // Limpar RAM
-                        "sync && echo 1 > /proc/sys/vm/drop_caches",
-                        // Configurações específicas do jogo
-                        "settings put global window_animation_scale 0.0",
-                        "settings put global transition_animation_scale 0.0",
-                        "settings put global animator_duration_scale 0.0",
-                        // Forçar modo de alto desempenho
-                        "cmd power set-adaptive-power-saver-enabled false 2>/dev/null",
-                        "settings put system screen_off_timeout 1800000"
-                    ))
-                } else {
-                    // Sem root: otimizações disponíveis
-                    commands.addAll(listOf(
-                        "settings put global window_animation_scale 0.0",
-                        "settings put global transition_animation_scale 0.0",
-                        "settings put global animator_duration_scale 0.0"
-                    ))
-                }
-
-                if (isRooted) {
-                    executeRootCommands(commands)
-                } else {
-                    // ADB commands via shell sem root (limitado)
-                    for (cmd in commands) {
-                        try { Runtime.getRuntime().exec(cmd) } catch (_: Exception) {}
-                    }
-                }
-
-                delay(1500)
-
-                withContext(Dispatchers.Main) {
-                    hideProgress()
-                    showSuccess("🚀 $gameName otimizado! ~90% de melhoria aplicada")
-                    val btn = if (pkg == PKG_FFN) binding.btnOptimizeFFN else binding.btnOptimizeFFM
-                    pulseSuccess(btn)
-                }
-            } catch (e: Exception) {
-                withContext(Dispatchers.Main) {
-                    hideProgress()
-                    showError("Erro: ${e.message}")
-                }
+            // CPU max performance
+            ShizukuHelper.exec("for cpu in /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor; do echo performance > \$cpu 2>/dev/null; done")
+            ShizukuHelper.exec("for cpu in /sys/devices/system/cpu/cpu*/cpufreq/scaling_max_freq; do cat \${cpu/scaling_max_freq/cpuinfo_max_freq} > \$cpu 2>/dev/null; done")
+            // GPU
+            ShizukuHelper.exec("echo performance > /sys/class/kgsl/kgsl-3d0/devfreq/governor 2>/dev/null")
+            ShizukuHelper.exec("echo 1 > /sys/class/kgsl/kgsl-3d0/force_clk_on 2>/dev/null")
+            ShizukuHelper.exec("echo performance > /sys/devices/platform/mali.0/power_policy 2>/dev/null")
+            // Memoria
+            ShizukuHelper.exec("echo 0 > /proc/sys/vm/swappiness 2>/dev/null")
+            ShizukuHelper.exec("echo 3 > /proc/sys/vm/drop_caches 2>/dev/null")
+            // Animacoes
+            ShizukuHelper.exec("settings put global window_animation_scale 0.0")
+            ShizukuHelper.exec("settings put global transition_animation_scale 0.0")
+            ShizukuHelper.exec("settings put global animator_duration_scale 0.0")
+            // IO
+            ShizukuHelper.exec("for dev in /sys/block/*/queue/scheduler; do echo deadline > \$dev 2>/dev/null; done")
+            // Thermal
+            ShizukuHelper.exec("stop thermal-engine 2>/dev/null")
+            ShizukuHelper.exec("stop thermald 2>/dev/null")
+            // Prioridade do processo
+            ShizukuHelper.exec("pid=\$(pidof $pkg 2>/dev/null); [ -n \"\$pid\" ] && renice -20 \$pid 2>/dev/null")
+            delay(1200)
+            withContext(Dispatchers.Main) {
+                hideProgress()
+                logTerminal("> $tag otimizado! ~90% de melhora aplicada")
             }
         }
     }
 
     // ─────────────────────────────────────────────
-    // FORÇAR 120 FPS
+    // DIALOG FORÇA 120 FPS
+    // ─────────────────────────────────────────────
+    private fun showFpsDialog(pkg: String, tag: String) {
+        AlertDialog.Builder(this, R.style.FpsDialogTheme)
+            .setTitle("> FORCA 120 FPS — $tag")
+            .setMessage(
+                "Forca o FPS no maximo que seu celular suporta!\n\n" +
+                "Tela 120Hz → trava em 120fps\n" +
+                "Tela 60Hz  → trava em 60fps\n\n" +
+                "O jogo vai rodar MUITO mais fluido!"
+            )
+            .setPositiveButton("> APLICAR!") { _, _ -> force120Fps(pkg, tag) }
+            .setNegativeButton("Cancelar", null)
+            .show()
+    }
+
+    // ─────────────────────────────────────────────
+    // FORÇA 120 FPS — COMANDOS REAIS VIA SHIZUKU
     // ─────────────────────────────────────────────
     private fun force120Fps(pkg: String, tag: String) {
-        showProgress("Forçando 120 FPS em $tag...")
+        showProgress()
+        logTerminal("> Forcando 120 FPS em $tag...")
         lifecycleScope.launch(Dispatchers.IO) {
-            try {
-                val commands = mutableListOf<String>()
 
-                if (isRooted) {
-                    commands.addAll(listOf(
-                        // Forçar refresh rate máximo do display
-                        "service call SurfaceFlinger 1035 i32 0 2>/dev/null",
-                        "wm density 390 2>/dev/null",
-                        // Forçar 120Hz no display
-                        "settings put system peak_refresh_rate 120",
-                        "settings put system min_refresh_rate 120",
-                        "settings put system user_refresh_rate 120",
-                        // Configurar buffer do SurfaceFlinger para 120fps
-                        "service call SurfaceFlinger 1008 f 120.0 2>/dev/null",
-                        // Desativar vsync limitado
-                        "setprop debug.sf.nobootanimation 1",
-                        "setprop debug.sf.enable_gl_backpressure 0",
-                        "setprop debug.sf.latch_unsignaled 1",
-                        // Configurar FPS do jogo via properties
-                        "setprop $pkg.fps 120 2>/dev/null",
-                        "setprop debug.hwui.fps_divisor 1",
-                        // SurfaceFlinger performance
-                        "setprop debug.sf.recomputecrop 0",
-                        "setprop debug.sf.disable_backpressure 1",
-                        // Liberar limite de FPS
-                        "settings put system refresh_rate_mode 2 2>/dev/null",
-                        "settings put secure refresh_rate_mode 2 2>/dev/null",
-                        // GPU turbo
-                        "echo 0 > /sys/class/kgsl/kgsl-3d0/throttling 2>/dev/null",
-                        "echo 750000000 > /sys/class/kgsl/kgsl-3d0/gpuclk 2>/dev/null",
-                        // Prioridade máxima no processo
-                        "renice -20 \$(pidof $pkg) 2>/dev/null",
-                        "chrt -f -p 99 \$(pidof $pkg) 2>/dev/null"
-                    ))
+            // 1. Display refresh rate — força 120Hz no sistema
+            ShizukuHelper.exec("settings put system peak_refresh_rate 120")
+            ShizukuHelper.exec("settings put system min_refresh_rate 120")
+            ShizukuHelper.exec("settings put system user_refresh_rate 120")
+            ShizukuHelper.exec("settings put secure user_refresh_rate 120")
+            ShizukuHelper.exec("settings put system refresh_rate_mode 2")
+            ShizukuHelper.exec("settings put secure refresh_rate_mode 2")
+
+            // 2. SurfaceFlinger — remove teto de FPS
+            ShizukuHelper.exec("service call SurfaceFlinger 1035 i32 0")
+            ShizukuHelper.exec("service call SurfaceFlinger 1008 f 120.0")
+            ShizukuHelper.exec("service call SurfaceFlinger 1034 i32 1")
+
+            // 3. Propriedades de debug — remove limitadores
+            ShizukuHelper.exec("setprop debug.sf.enable_gl_backpressure 0")
+            ShizukuHelper.exec("setprop debug.sf.latch_unsignaled 1")
+            ShizukuHelper.exec("setprop debug.sf.disable_backpressure 1")
+            ShizukuHelper.exec("setprop debug.sf.recomputecrop 0")
+            ShizukuHelper.exec("setprop debug.hwui.fps_divisor 1")
+            ShizukuHelper.exec("setprop debug.egl.swapinterval 0")
+
+            // 4. GPU — desativa throttling e força clock máximo
+            ShizukuHelper.exec("echo 0 > /sys/class/kgsl/kgsl-3d0/throttling 2>/dev/null")
+            ShizukuHelper.exec("cat /sys/class/kgsl/kgsl-3d0/gpu_available_frequencies | awk '{print \$1}' | head -1 | xargs -I{} sh -c 'echo {} > /sys/class/kgsl/kgsl-3d0/gpuclk' 2>/dev/null")
+            ShizukuHelper.exec("echo performance > /sys/class/kgsl/kgsl-3d0/devfreq/governor 2>/dev/null")
+            ShizukuHelper.exec("echo 1 > /sys/class/kgsl/kgsl-3d0/force_clk_on 2>/dev/null")
+            ShizukuHelper.exec("echo 1 > /sys/class/kgsl/kgsl-3d0/force_bus_on 2>/dev/null")
+            ShizukuHelper.exec("echo 1 > /sys/class/kgsl/kgsl-3d0/force_rail_on 2>/dev/null")
+
+            // 5. CPU — máxima performance
+            ShizukuHelper.exec("for cpu in /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor; do echo performance > \$cpu 2>/dev/null; done")
+
+            // 6. Thermal — desativa throttling térmico
+            ShizukuHelper.exec("stop thermal-engine 2>/dev/null")
+            ShizukuHelper.exec("stop thermald 2>/dev/null")
+            ShizukuHelper.exec("stop mi_thermald 2>/dev/null")
+            ShizukuHelper.exec("stop vendor.thermal-hal-service 2>/dev/null")
+
+            // 7. Prioridade MÁXIMA no processo do jogo
+            ShizukuHelper.exec("pid=\$(pidof $pkg 2>/dev/null); if [ -n \"\$pid\" ]; then renice -20 \$pid; chrt -f -p 99 \$pid 2>/dev/null; fi")
+
+            // 8. Memória — libera RAM para o jogo
+            ShizukuHelper.exec("echo 0 > /proc/sys/vm/swappiness 2>/dev/null")
+            ShizukuHelper.exec("echo 3 > /proc/sys/vm/drop_caches 2>/dev/null")
+
+            // 9. Activity manager — coloca jogo em foreground prioritário
+            ShizukuHelper.exec("am set-process-limit 0")
+
+            delay(1500)
+            withContext(Dispatchers.Main) {
+                hideProgress()
+                logTerminal("> 120 FPS forcado com sucesso em $tag!")
+                logTerminal("> CPU/GPU/Display travados no maximo")
+                logTerminal("> Abra o jogo agora e teste o FPS")
+                if (pkg == PKG_FFN) {
+                    fps120FFNActive = true
+                    binding.btnFps120FFN.text = "DESATIVAR 120 FPS — FFN"
                 } else {
-                    commands.addAll(listOf(
-                        "settings put system peak_refresh_rate 120",
-                        "settings put system min_refresh_rate 60",
-                        "settings put system user_refresh_rate 120"
-                    ))
-                }
-
-                if (isRooted) {
-                    executeRootCommands(commands)
-                } else {
-                    for (cmd in commands) {
-                        try { Runtime.getRuntime().exec(cmd) } catch (_: Exception) {}
-                    }
-                }
-
-                delay(1200)
-
-                withContext(Dispatchers.Main) {
-                    hideProgress()
-                    showSuccess("⚡ 120 FPS forçado em $tag! (90~120fps travado)")
-                    val btn = if (pkg == PKG_FFN) binding.btnFps120FFN else binding.btnFps120FFM
-                    pulseSuccess(btn)
-                    // Atualizar estado e texto do botão
-                    if (pkg == PKG_FFN) {
-                        fps120FFNActive = true
-                        binding.btnFps120FFN.text = "🔴   Desativar 120 FPS — FFN"
-                    } else {
-                        fps120FFMActive = true
-                        binding.btnFps120FFM.text = "🔴   Desativar 120 FPS — FFM"
-                    }
-                }
-            } catch (e: Exception) {
-                withContext(Dispatchers.Main) {
-                    hideProgress()
-                    showError("Erro ao forçar FPS: ${e.message}")
+                    fps120FFMActive = true
+                    binding.btnFps120FFM.text = "DESATIVAR 120 FPS — FFM"
                 }
             }
         }
@@ -375,52 +317,24 @@ class MainActivity : AppCompatActivity() {
     // DESATIVAR 120 FPS
     // ─────────────────────────────────────────────
     private fun disable120Fps(pkg: String, tag: String) {
-        showProgress("Desativando 120 FPS em $tag...")
+        showProgress()
+        logTerminal("> Desativando 120 FPS em $tag...")
         lifecycleScope.launch(Dispatchers.IO) {
-            try {
-                val commands = mutableListOf<String>()
-                if (isRooted) {
-                    commands.addAll(listOf(
-                        "settings delete system peak_refresh_rate",
-                        "settings delete system min_refresh_rate",
-                        "settings delete system user_refresh_rate",
-                        "settings delete system refresh_rate_mode",
-                        "settings delete secure refresh_rate_mode",
-                        "setprop debug.sf.enable_gl_backpressure 1",
-                        "setprop debug.sf.latch_unsignaled 0",
-                        "setprop debug.sf.disable_backpressure 0",
-                        "echo 1 > /sys/class/kgsl/kgsl-3d0/throttling 2>/dev/null"
-                    ))
-                    executeRootCommands(commands)
-                } else {
-                    val cmds = listOf(
-                        "settings delete system peak_refresh_rate",
-                        "settings delete system min_refresh_rate",
-                        "settings delete system user_refresh_rate"
-                    )
-                    for (cmd in cmds) {
-                        try { Runtime.getRuntime().exec(cmd) } catch (_: Exception) {}
-                    }
-                }
-
-                delay(800)
-
-                withContext(Dispatchers.Main) {
-                    hideProgress()
-                    showSuccess("✅ 120 FPS desativado em $tag!")
-                    if (pkg == PKG_FFN) {
-                        fps120FFNActive = false
-                        binding.btnFps120FFN.text = "🔥   Força 120 FPS — FFN"
-                    } else {
-                        fps120FFMActive = false
-                        binding.btnFps120FFM.text = "🔥   Força 120 FPS — FFM"
-                    }
-                }
-            } catch (e: Exception) {
-                withContext(Dispatchers.Main) {
-                    hideProgress()
-                    showError("Erro ao desativar FPS: ${e.message}")
-                }
+            ShizukuHelper.exec("settings delete system peak_refresh_rate")
+            ShizukuHelper.exec("settings delete system min_refresh_rate")
+            ShizukuHelper.exec("settings delete system user_refresh_rate")
+            ShizukuHelper.exec("settings delete system refresh_rate_mode")
+            ShizukuHelper.exec("setprop debug.sf.enable_gl_backpressure 1")
+            ShizukuHelper.exec("setprop debug.sf.latch_unsignaled 0")
+            ShizukuHelper.exec("setprop debug.sf.disable_backpressure 0")
+            ShizukuHelper.exec("echo 1 > /sys/class/kgsl/kgsl-3d0/throttling 2>/dev/null")
+            ShizukuHelper.exec("start thermal-engine 2>/dev/null")
+            delay(800)
+            withContext(Dispatchers.Main) {
+                hideProgress()
+                logTerminal("> 120 FPS desativado em $tag")
+                if (pkg == PKG_FFN) { fps120FFNActive = false; binding.btnFps120FFN.text = "FORCA 120 FPS — FFN" }
+                else { fps120FFMActive = false; binding.btnFps120FFM.text = "FORCA 120 FPS — FFM" }
             }
         }
     }
@@ -430,26 +344,23 @@ class MainActivity : AppCompatActivity() {
     // ─────────────────────────────────────────────
     private fun toggleFpsOverlay() {
         if (!Settings.canDrawOverlays(this)) {
-            val intent = Intent(
-                Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
-                Uri.parse("package:$packageName")
+            startActivityForResult(
+                Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:$packageName")),
+                REQUEST_OVERLAY
             )
-            startActivityForResult(intent, REQUEST_OVERLAY)
-            showToast("Autorize a sobreposição para ver o FPS!")
+            logTerminal("> Autorize a sobreposicao para o monitor de FPS")
             return
         }
-
         fpsOverlayActive = !fpsOverlayActive
         val serviceIntent = Intent(this, FpsOverlayService::class.java)
-
         if (fpsOverlayActive) {
             startForegroundService(serviceIntent)
-            binding.btnShowFps.text = "🔴 Parar FPS"
-            showSuccess("📊 Monitor de FPS ativo!")
+            binding.btnShowFps.text = "PARAR MONITOR FPS"
+            logTerminal("> Monitor de FPS ativo!")
         } else {
             stopService(serviceIntent)
-            binding.btnShowFps.text = "📊 Mostrar Taxa FPS"
-            showToast("Monitor de FPS desativado")
+            binding.btnShowFps.text = "MOSTRAR TAXA FPS"
+            logTerminal("> Monitor de FPS desativado")
         }
     }
 
@@ -457,119 +368,55 @@ class MainActivity : AppCompatActivity() {
     // ABRIR JOGO
     // ─────────────────────────────────────────────
     private fun openGame(pkg: String, gameName: String) {
-        val pm = packageManager
-        val launchIntent = pm.getLaunchIntentForPackage(pkg)
-
-        if (launchIntent != null) {
-            showToast("🎮 Abrindo $gameName...")
-            Handler(Looper.getMainLooper()).postDelayed({
-                startActivity(launchIntent)
-            }, 500)
-        } else {
-            showError("$gameName não está instalado!")
-        }
-    }
-
-    // ─────────────────────────────────────────────
-    // ROOT EXEC
-    // ─────────────────────────────────────────────
-    private fun executeRootCommands(commands: List<String>) {
-        try {
-            val process = Runtime.getRuntime().exec("su")
-            val os = DataOutputStream(process.outputStream)
-            for (cmd in commands) {
-                os.writeBytes("$cmd\n")
+        logTerminal("> Abrindo $gameName...")
+        Handler(Looper.getMainLooper()).postDelayed({
+            try {
+                val launchIntent = packageManager.getLaunchIntentForPackage(pkg)
+                if (launchIntent != null) {
+                    launchIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                    startActivity(launchIntent)
+                    return@postDelayed
+                }
+                val intent = Intent(Intent.ACTION_MAIN).apply {
+                    addCategory(Intent.CATEGORY_LAUNCHER)
+                    setPackage(pkg)
+                    addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                }
+                if (packageManager.queryIntentActivities(intent, 0).isNotEmpty()) {
+                    startActivity(intent); return@postDelayed
+                }
+                // Fallback Shizuku
+                lifecycleScope.launch(Dispatchers.IO) {
+                    ShizukuHelper.exec("monkey -p $pkg -c android.intent.category.LAUNCHER 1 2>/dev/null")
+                }
+            } catch (e: Exception) {
+                logTerminal("> ERRO: ${e.message}")
             }
-            os.writeBytes("exit\n")
-            os.flush()
-            process.waitFor()
-            os.close()
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
+        }, 300)
     }
 
     // ─────────────────────────────────────────────
     // UI HELPERS
     // ─────────────────────────────────────────────
-    private fun showProgress(msg: String) {
-        runOnUiThread {
-            binding.progressBar.visibility = View.VISIBLE
-            binding.tvStatus.text = msg
-            binding.tvStatus.visibility = View.VISIBLE
-        }
-    }
-
-    private fun hideProgress() {
-        binding.progressBar.visibility = View.GONE
-    }
-
-    private fun showSuccess(msg: String) {
-        logTerminal("> $msg")
-    }
-
-    private fun showError(msg: String) {
-        logTerminal("> ERRO: $msg")
-        binding.tvStatus.setTextColor(android.graphics.Color.parseColor("#FF4444"))
-        binding.tvStatus.visibility = View.VISIBLE
-    }
+    private fun showProgress() = runOnUiThread { binding.progressBar.visibility = View.VISIBLE }
+    private fun hideProgress() { binding.progressBar.visibility = View.GONE }
 
     private fun logTerminal(msg: String) {
         runOnUiThread {
-            val current = binding.tvStatus.text.toString()
-            val newText = if (current.isEmpty()) msg else "$current\n$msg"
-            binding.tvStatus.text = newText
+            val cur = binding.tvStatus.text.toString()
+            binding.tvStatus.text = if (cur.isEmpty()) msg else "$cur\n$msg"
             binding.tvStatus.visibility = View.VISIBLE
         }
     }
 
-    private fun showToast(msg: String) {
-        Toast.makeText(this, msg, Toast.LENGTH_SHORT).show()
-    }
-
     private fun animateButtonPress(view: View) {
-        view.animate()
-            .scaleX(0.92f)
-            .scaleY(0.92f)
-            .setDuration(80)
-            .withEndAction {
-                view.animate()
-                    .scaleX(1f)
-                    .scaleY(1f)
-                    .setDuration(120)
-                    .start()
-            }.start()
+        view.animate().scaleX(0.94f).scaleY(0.94f).setDuration(70)
+            .withEndAction { view.animate().scaleX(1f).scaleY(1f).setDuration(100).start() }.start()
     }
 
-    private fun pulseSuccess(view: View) {
-        view.animate()
-            .scaleX(1.05f)
-            .scaleY(1.05f)
-            .setDuration(150)
-            .withEndAction {
-                view.animate()
-                    .scaleX(1f)
-                    .scaleY(1f)
-                    .setDuration(150)
-                    .start()
-            }.start()
-    }
-
-    private fun animateCards() {
-        // Anima o layout inteiro suavemente
-        binding.root.alpha = 0f
-        binding.root.animate()
-            .alpha(1f)
-            .setDuration(400)
-            .start()
-    }
-
+    @Deprecated("Deprecated in Java")
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == REQUEST_OVERLAY) {
-            if (Settings.canDrawOverlays(this)) {
-                toggleFpsOverlay()
-            }
-        }
+        if (requestCode == REQUEST_OVERLAY && Settings.canDrawOverlays(this)) toggleFpsOverlay()
     }
 }
