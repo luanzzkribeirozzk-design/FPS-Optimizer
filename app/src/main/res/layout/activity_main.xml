@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#000000">
@@ -11,11 +10,124 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
+    <!-- ══ TELA DE BLOQUEIO SHIZUKU ══ -->
+    <LinearLayout
+        android:id="@+id/layoutShizukuWall"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:padding="32dp"
+        android:visibility="gone">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="FPS OPTIMIZER"
+            android:textColor="#1AFF1A"
+            android:textSize="13sp"
+            android:letterSpacing="0.15"
+            android:fontFamily="monospace"
+            android:paddingBottom="6dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="SHIZUKU"
+            android:textColor="#FF00FF"
+            android:textSize="52sp"
+            android:textStyle="bold"
+            android:fontFamily="monospace"
+            android:gravity="center" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="NECESSARIO"
+            android:textColor="#FF00FF"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            android:fontFamily="monospace"
+            android:gravity="center"
+            android:paddingBottom="24dp" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#1AFF1A"
+            android:alpha="0.4"
+            android:layout_marginBottom="24dp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Este app requer o Shizuku ativo para funcionar. Sem ele NADA funciona."
+            android:textColor="#1AFF1A"
+            android:textSize="13sp"
+            android:fontFamily="monospace"
+            android:gravity="center"
+            android:lineSpacingMultiplier="1.4"
+            android:paddingBottom="8dp" />
+
+        <TextView
+            android:id="@+id/tvShizukuReason"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text=""
+            android:textColor="#FFD600"
+            android:textSize="12sp"
+            android:fontFamily="monospace"
+            android:gravity="center"
+            android:lineSpacingMultiplier="1.4"
+            android:paddingBottom="32dp" />
+
+        <Button
+            android:id="@+id/btnInstallShizuku"
+            android:layout_width="match_parent"
+            android:layout_height="52dp"
+            android:layout_marginBottom="10dp"
+            android:text="INSTALAR SHIZUKU"
+            android:textColor="#000000"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:letterSpacing="0.1"
+            android:fontFamily="monospace"
+            android:background="@drawable/btn_matrix_fill"
+            android:stateListAnimator="@null" />
+
+        <Button
+            android:id="@+id/btnRetryShizuku"
+            android:layout_width="match_parent"
+            android:layout_height="52dp"
+            android:text="JA ATIVEI — TENTAR NOVAMENTE"
+            android:textColor="#1AFF1A"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            android:letterSpacing="0.06"
+            android:fontFamily="monospace"
+            android:background="@drawable/btn_matrix_outline"
+            android:stateListAnimator="@null" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="&#10132; play.google.com → Shizuku"
+            android:textColor="#1AFF1A"
+            android:textSize="11sp"
+            android:fontFamily="monospace"
+            android:alpha="0.5"
+            android:paddingTop="20dp" />
+
+    </LinearLayout>
+
+    <!-- ══ CONTEÚDO PRINCIPAL ══ -->
     <ScrollView
+        android:id="@+id/scrollContent"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:fillViewport="true"
-        android:scrollbars="none">
+        android:scrollbars="none"
+        android:visibility="gone">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -25,7 +137,7 @@
             android:paddingEnd="16dp"
             android:paddingBottom="24dp">
 
-            <!-- ══ HEADER ESTILO MATRIX ══ -->
+            <!-- HEADER -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -81,7 +193,7 @@
                             android:layout_width="7dp"
                             android:layout_height="7dp"
                             android:background="@drawable/dot_green"
-                            android:layout_marginEnd="4dp" />
+                            android:layout_marginEnd="5dp" />
 
                         <TextView
                             android:id="@+id/tvRootStatus"
@@ -97,7 +209,6 @@
                     </LinearLayout>
                 </LinearLayout>
 
-                <!-- Linha divisória neon verde -->
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
@@ -107,7 +218,7 @@
 
             </LinearLayout>
 
-            <!-- ══ HIDE STREAM ══ -->
+            <!-- HIDE STREAM -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -168,14 +279,12 @@
 
             </LinearLayout>
 
-            <!-- ══ BOTÕES PRINCIPAIS ══ -->
-
-            <!-- Limpar Cache -->
+            <!-- BOTÕES -->
             <Button
                 android:id="@+id/btnClearCache"
                 android:layout_width="match_parent"
                 android:layout_height="54dp"
-                android:layout_marginBottom="6dp"
+                android:layout_marginBottom="8dp"
                 android:text="LIMPAR CACHE"
                 android:textColor="#000000"
                 android:textSize="14sp"
@@ -185,7 +294,6 @@
                 android:background="@drawable/btn_matrix_fill"
                 android:stateListAnimator="@null" />
 
-            <!-- Otimizar FFN -->
             <Button
                 android:id="@+id/btnOptimizeFFN"
                 android:layout_width="match_parent"
@@ -207,11 +315,10 @@
                 android:textColor="#1AFF1A"
                 android:textSize="11sp"
                 android:gravity="center"
-                android:alpha="0.55"
+                android:alpha="0.5"
                 android:fontFamily="monospace"
                 android:paddingBottom="8dp" />
 
-            <!-- Otimizar FFM -->
             <Button
                 android:id="@+id/btnOptimizeFFM"
                 android:layout_width="match_parent"
@@ -233,17 +340,16 @@
                 android:textColor="#1AFF1A"
                 android:textSize="11sp"
                 android:gravity="center"
-                android:alpha="0.55"
+                android:alpha="0.5"
                 android:fontFamily="monospace"
                 android:paddingBottom="8dp" />
 
-            <!-- Força 120 FPS FFN -->
             <Button
                 android:id="@+id/btnFps120FFN"
                 android:layout_width="match_parent"
                 android:layout_height="54dp"
                 android:layout_marginBottom="2dp"
-                android:text="FORÇA 120 FPS — FFN"
+                android:text="FORCA 120 FPS — FFN"
                 android:textColor="#1AFF1A"
                 android:textSize="14sp"
                 android:textStyle="bold"
@@ -259,17 +365,16 @@
                 android:textColor="#1AFF1A"
                 android:textSize="11sp"
                 android:gravity="center"
-                android:alpha="0.55"
+                android:alpha="0.5"
                 android:fontFamily="monospace"
                 android:paddingBottom="8dp" />
 
-            <!-- Força 120 FPS FFM -->
             <Button
                 android:id="@+id/btnFps120FFM"
                 android:layout_width="match_parent"
                 android:layout_height="54dp"
                 android:layout_marginBottom="2dp"
-                android:text="FORÇA 120 FPS — FFM"
+                android:text="FORCA 120 FPS — FFM"
                 android:textColor="#1AFF1A"
                 android:textSize="14sp"
                 android:textStyle="bold"
@@ -285,11 +390,10 @@
                 android:textColor="#1AFF1A"
                 android:textSize="11sp"
                 android:gravity="center"
-                android:alpha="0.55"
+                android:alpha="0.5"
                 android:fontFamily="monospace"
                 android:paddingBottom="8dp" />
 
-            <!-- Mostrar FPS -->
             <Button
                 android:id="@+id/btnShowFps"
                 android:layout_width="match_parent"
@@ -304,7 +408,6 @@
                 android:background="@drawable/btn_matrix_outline"
                 android:stateListAnimator="@null" />
 
-            <!-- Abrir Jogos lado a lado -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -342,7 +445,7 @@
 
             </LinearLayout>
 
-            <!-- ══ TERMINAL LOG ══ -->
+            <!-- TERMINAL LOG -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -372,12 +475,11 @@
                         android:text="v1.0"
                         android:textColor="#1AFF1A"
                         android:textSize="10sp"
-                        android:alpha="0.5"
+                        android:alpha="0.4"
                         android:fontFamily="monospace" />
 
                 </LinearLayout>
 
-                <!-- Barra de progresso -->
                 <ProgressBar
                     android:id="@+id/progressBar"
                     style="@style/Widget.AppCompat.ProgressBar.Horizontal"
@@ -388,12 +490,11 @@
                     android:visibility="gone"
                     android:layout_marginBottom="6dp" />
 
-                <!-- Log de texto -->
                 <TextView
                     android:id="@+id/tvStatus"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:minHeight="80dp"
+                    android:minHeight="60dp"
                     android:text=""
                     android:textColor="#1AFF1A"
                     android:textSize="12sp"
@@ -401,7 +502,6 @@
                     android:gravity="top"
                     android:visibility="gone" />
 
-                <!-- Cursor piscando -->
                 <TextView
                     android:id="@+id/tvCursor"
                     android:layout_width="wrap_content"
@@ -413,7 +513,6 @@
 
             </LinearLayout>
 
-            <!-- Limpar logs -->
             <Button
                 android:id="@+id/btnClearLogs"
                 android:layout_width="match_parent"
@@ -428,7 +527,6 @@
                 android:background="@drawable/btn_matrix_outline_dim"
                 android:stateListAnimator="@null" />
 
-            <!-- Footer -->
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -436,7 +534,7 @@
                 android:textColor="#1AFF1A"
                 android:textSize="10sp"
                 android:gravity="center"
-                android:alpha="0.3"
+                android:alpha="0.25"
                 android:fontFamily="monospace"
                 android:paddingTop="12dp" />
 
