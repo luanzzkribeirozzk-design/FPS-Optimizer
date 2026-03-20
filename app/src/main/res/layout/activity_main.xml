@@ -1,0 +1,449 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/bg_deep">
+
+    <com.ffoptimizer.app.ParticleView
+        android:id="@+id/particleView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true"
+        android:scrollbars="none">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingStart="18dp"
+            android:paddingEnd="18dp"
+            android:paddingBottom="32dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:paddingTop="24dp"
+                android:paddingBottom="16dp">
+
+                <ImageView
+                    android:layout_width="280dp"
+                    android:layout_height="280dp"
+                    android:src="@drawable/banner"
+                    android:scaleType="fitCenter"
+                    android:layout_gravity="center" />
+
+                <View
+                    android:layout_width="200dp"
+                    android:layout_height="2dp"
+                    android:layout_marginTop="10dp"
+                    android:background="@drawable/divider_neon" />
+
+            </LinearLayout>
+
+            <!-- STATUS -->
+            <androidx.cardview.widget.CardView
+                android:id="@+id/cardStatus"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="14dp"
+                app:cardBackgroundColor="#0A1628"
+                app:cardCornerRadius="18dp"
+                app:cardElevation="0dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="18dp"
+                    android:background="@drawable/card_border_cyan">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical">
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="STATUS DO DISPOSITIVO"
+                            android:textColor="#00FFEA"
+                            android:textSize="10sp"
+                            android:letterSpacing="0.2"
+                            android:textStyle="bold" />
+
+                        <View
+                            android:id="@+id/statusDot"
+                            android:layout_width="8dp"
+                            android:layout_height="8dp"
+                            android:background="@drawable/dot_green" />
+
+                    </LinearLayout>
+
+                    <TextView
+                        android:id="@+id/tvRootStatus"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="🔍 Verificando root..."
+                        android:textColor="#E0E0FF"
+                        android:textSize="14sp"
+                        android:textStyle="bold"
+                        android:paddingTop="8dp" />
+
+                    <TextView
+                        android:id="@+id/tvStatus"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text=""
+                        android:textColor="#00FFEA"
+                        android:textSize="13sp"
+                        android:paddingTop="6dp"
+                        android:visibility="gone" />
+
+                    <ProgressBar
+                        android:id="@+id/progressBar"
+                        style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+                        android:layout_width="match_parent"
+                        android:layout_height="4dp"
+                        android:layout_marginTop="10dp"
+                        android:indeterminate="true"
+                        android:indeterminateTint="#00FFEA"
+                        android:visibility="gone" />
+
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+            <!-- LIMPEZA -->
+            <androidx.cardview.widget.CardView
+                android:id="@+id/cardCache"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="14dp"
+                app:cardBackgroundColor="#0A1628"
+                app:cardCornerRadius="18dp"
+                app:cardElevation="0dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="18dp"
+                    android:background="@drawable/card_border_cyan">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="🧹  LIMPEZA"
+                        android:textColor="#00FFEA"
+                        android:textSize="10sp"
+                        android:letterSpacing="0.2"
+                        android:textStyle="bold"
+                        android:paddingBottom="12dp" />
+
+                    <Button
+                        android:id="@+id/btnClearCache"
+                        android:layout_width="match_parent"
+                        android:layout_height="54dp"
+                        android:text="🗑️   Limpar Cache"
+                        android:textColor="#FFFFFF"
+                        android:textSize="15sp"
+                        android:textStyle="bold"
+                        android:background="@drawable/btn_neon_cyan"
+                        android:stateListAnimator="@null" />
+
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+            <!-- OTIMIZAR -->
+            <androidx.cardview.widget.CardView
+                android:id="@+id/cardOptimize"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="14dp"
+                app:cardBackgroundColor="#0A1628"
+                app:cardCornerRadius="18dp"
+                app:cardElevation="0dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="18dp"
+                    android:background="@drawable/card_border_orange">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="⚡  OTIMIZAÇÃO  •  ~90% de melhora"
+                        android:textColor="#FF9D00"
+                        android:textSize="10sp"
+                        android:letterSpacing="0.2"
+                        android:textStyle="bold"
+                        android:paddingBottom="12dp" />
+
+                    <Button
+                        android:id="@+id/btnOptimizeFFN"
+                        android:layout_width="match_parent"
+                        android:layout_height="54dp"
+                        android:text="⚡   Otimizar FFN"
+                        android:textColor="#FFFFFF"
+                        android:textSize="15sp"
+                        android:textStyle="bold"
+                        android:background="@drawable/btn_neon_orange"
+                        android:stateListAnimator="@null"
+                        android:layout_marginBottom="10dp" />
+
+                    <Button
+                        android:id="@+id/btnOptimizeFFM"
+                        android:layout_width="match_parent"
+                        android:layout_height="54dp"
+                        android:text="⚡   Otimizar FFM"
+                        android:textColor="#FFFFFF"
+                        android:textSize="15sp"
+                        android:textStyle="bold"
+                        android:background="@drawable/btn_neon_orange"
+                        android:stateListAnimator="@null" />
+
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+            <!-- 120 FPS -->
+            <androidx.cardview.widget.CardView
+                android:id="@+id/cardFps"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="14dp"
+                app:cardBackgroundColor="#0A1628"
+                app:cardCornerRadius="18dp"
+                app:cardElevation="0dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="18dp"
+                    android:background="@drawable/card_border_pink">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="🔥  FORÇA 120 FPS  •  90~120fps travado"
+                        android:textColor="#FF6FFF"
+                        android:textSize="10sp"
+                        android:letterSpacing="0.2"
+                        android:textStyle="bold"
+                        android:paddingBottom="12dp" />
+
+                    <Button
+                        android:id="@+id/btnFps120FFN"
+                        android:layout_width="match_parent"
+                        android:layout_height="54dp"
+                        android:text="🔥   Força 120 FPS — FFN"
+                        android:textColor="#FFFFFF"
+                        android:textSize="15sp"
+                        android:textStyle="bold"
+                        android:background="@drawable/btn_neon_pink"
+                        android:stateListAnimator="@null"
+                        android:layout_marginBottom="10dp" />
+
+                    <Button
+                        android:id="@+id/btnFps120FFM"
+                        android:layout_width="match_parent"
+                        android:layout_height="54dp"
+                        android:text="🔥   Força 120 FPS — FFM"
+                        android:textColor="#FFFFFF"
+                        android:textSize="15sp"
+                        android:textStyle="bold"
+                        android:background="@drawable/btn_neon_pink"
+                        android:stateListAnimator="@null" />
+
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+            <!-- MONITOR FPS -->
+            <androidx.cardview.widget.CardView
+                android:id="@+id/cardOverlay"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="14dp"
+                app:cardBackgroundColor="#0A1628"
+                app:cardCornerRadius="18dp"
+                app:cardElevation="0dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="18dp"
+                    android:background="@drawable/card_border_green">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="📊  MONITOR EM TEMPO REAL"
+                        android:textColor="#00FF88"
+                        android:textSize="10sp"
+                        android:letterSpacing="0.2"
+                        android:textStyle="bold"
+                        android:paddingBottom="12dp" />
+
+                    <Button
+                        android:id="@+id/btnShowFps"
+                        android:layout_width="match_parent"
+                        android:layout_height="54dp"
+                        android:text="📊   Mostrar Taxa FPS"
+                        android:textColor="#FFFFFF"
+                        android:textSize="15sp"
+                        android:textStyle="bold"
+                        android:background="@drawable/btn_neon_green"
+                        android:stateListAnimator="@null" />
+
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+            <!-- ABRIR JOGOS -->
+            <androidx.cardview.widget.CardView
+                android:id="@+id/cardOpen"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="20dp"
+                app:cardBackgroundColor="#0A1628"
+                app:cardCornerRadius="18dp"
+                app:cardElevation="0dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="18dp"
+                    android:background="@drawable/card_border_cyan">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="🎮  ABRIR JOGO"
+                        android:textColor="#00FFEA"
+                        android:textSize="10sp"
+                        android:letterSpacing="0.2"
+                        android:textStyle="bold"
+                        android:paddingBottom="12dp" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                        <Button
+                            android:id="@+id/btnOpenFFN"
+                            android:layout_width="0dp"
+                            android:layout_height="54dp"
+                            android:layout_weight="1"
+                            android:text="▶  FFN"
+                            android:textColor="#FFFFFF"
+                            android:textSize="15sp"
+                            android:textStyle="bold"
+                            android:background="@drawable/btn_neon_cyan"
+                            android:stateListAnimator="@null"
+                            android:layout_marginEnd="8dp" />
+
+                        <Button
+                            android:id="@+id/btnOpenFFM"
+                            android:layout_width="0dp"
+                            android:layout_height="54dp"
+                            android:layout_weight="1"
+                            android:text="▶  FFM"
+                            android:textColor="#FFFFFF"
+                            android:textSize="15sp"
+                            android:textStyle="bold"
+                            android:background="@drawable/btn_neon_cyan"
+                            android:stateListAnimator="@null" />
+
+                    </LinearLayout>
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+            <!-- HIDE STREAM -->
+            <androidx.cardview.widget.CardView
+                android:id="@+id/cardHideStream"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="14dp"
+                app:cardBackgroundColor="#0A1628"
+                app:cardCornerRadius="18dp"
+                app:cardElevation="0dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="18dp"
+                    android:background="@drawable/card_border_pink">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:paddingBottom="6dp">
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="🎥  PRIVACIDADE DE STREAM"
+                            android:textColor="#FF6FFF"
+                            android:textSize="10sp"
+                            android:letterSpacing="0.2"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/tvHideStreamStatus"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="● OFF"
+                            android:textColor="#FF4444"
+                            android:textSize="11sp"
+                            android:textStyle="bold" />
+
+                    </LinearLayout>
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Tela preta em transmissões, prints e gravações"
+                        android:textColor="#8899BB"
+                        android:textSize="12sp"
+                        android:paddingBottom="12dp" />
+
+                    <Button
+                        android:id="@+id/btnHideStream"
+                        android:layout_width="match_parent"
+                        android:layout_height="54dp"
+                        android:text="🎥   Hide Stream"
+                        android:textColor="#FFFFFF"
+                        android:textSize="15sp"
+                        android:textStyle="bold"
+                        android:background="@drawable/btn_neon_pink"
+                        android:stateListAnimator="@null" />
+
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+
+                android:textColor="#33FFFFFF"
+                android:textSize="10sp"
+                android:gravity="center"
+                android:letterSpacing="0.15" />
+
+        </LinearLayout>
+    </ScrollView>
+
+</FrameLayout>
