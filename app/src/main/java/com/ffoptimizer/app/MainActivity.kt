@@ -1,7 +1,5 @@
 package com.ffoptimizer.app
 
-import android.app.ActivityManager
-import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
@@ -456,28 +454,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     // ─────────────────────────────────────────────
-    // HIDE STREAM
-    // ─────────────────────────────────────────────
-    private fun toggleHideStream() {
-        hideStreamActive = !hideStreamActive
-
-        if (hideStreamActive) {
-            // FLAG_SECURE bloqueia prints, gravações e transmissões — tela aparece preta
-            window.addFlags(WindowManager.LayoutParams.FLAG_SECURE)
-            binding.btnHideStream.text = "🔴   Hide Stream — ATIVO"
-            binding.tvHideStreamStatus.text = "● ON"
-            binding.tvHideStreamStatus.setTextColor(getColor(R.color.green_neon))
-            showSuccess("🔒 Hide Stream ativado! Tela preta em streams/prints/gravações")
-        } else {
-            window.clearFlags(WindowManager.LayoutParams.FLAG_SECURE)
-            binding.btnHideStream.text = "🎥   Hide Stream"
-            binding.tvHideStreamStatus.text = "● OFF"
-            binding.tvHideStreamStatus.setTextColor(android.graphics.Color.parseColor("#FF4444"))
-            showSuccess("🔓 Hide Stream desativado!")
-        }
-    }
-
-    // ─────────────────────────────────────────────
     // ABRIR JOGO
     // ─────────────────────────────────────────────
     private fun openGame(pkg: String, gameName: String) {
@@ -580,24 +556,12 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun animateCards() {
-        val cards = listOf(
-            binding.cardStatus,
-            binding.cardCache,
-            binding.cardOptimize,
-            binding.cardFps,
-            binding.cardOverlay,
-            binding.cardOpen
-        )
-        cards.forEachIndexed { index, card ->
-            card.alpha = 0f
-            card.translationY = 60f
-            card.animate()
-                .alpha(1f)
-                .translationY(0f)
-                .setDuration(400)
-                .setStartDelay((index * 80).toLong())
-                .start()
-        }
+        // Anima o layout inteiro suavemente
+        binding.root.alpha = 0f
+        binding.root.animate()
+            .alpha(1f)
+            .setDuration(400)
+            .start()
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
